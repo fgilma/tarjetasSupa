@@ -1,0 +1,7 @@
+{
+  "name": "tarjetasSupa",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
