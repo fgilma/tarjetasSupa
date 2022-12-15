@@ -1,20 +1,15 @@
 <ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Blank
-    </ion-title>
-  </ion-toolbar>
+<app-toolbar></app-toolbar> 
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
-    </ion-toolbar>
-  </ion-header>
-
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
+<ion-content >
+  <div style="margin-top:20%">
+    <ion-button expand="full" color="light">Administrador</ion-button>
   </div>
+  <div style="margin-top:15px">
+    <ion-button expand="full" [routerLink]="['/customer']" color="secondary">Cliente</ion-button>
+  </div>
+ <div style="margin-top:15px">
+  <ion-button expand="full" [routerLink]="['/login-terminal']" color="success">Terminal</ion-button>
+ </div>  
 </ion-content>

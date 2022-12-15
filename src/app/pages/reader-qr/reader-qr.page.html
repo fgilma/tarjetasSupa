@@ -1,0 +1,26 @@
+<!-- <script>document.querySelector('body').classList.add('scanner-active');</script> -->
+<app-toolbar></app-toolbar>
+
+<!-- <ion-content
+  [fullscreen]="true"
+  [style.--background]="scanActive?'#ffffff': '#00000000'" > -->
+  <!-- *ngIf="option==='Register'; else newAccount" -->
+<ion-content *ngIf="mobileweb===false; else camera">
+  <!-- <ion-content> -->
+  <ion-button expand="full" (click)="startScanner()" [hidden]="scanActive">
+    SCAN1
+  </ion-button>
+  <ion-row class="scan-button" [hidden]="!scanActive">
+    <ion-col class="ion-no-padding">
+      <ion-button expand="full" (click)="stopScanner()">Stop</ion-button>
+    </ion-col>
+  </ion-row>
+  <div class="scan-box" [hidden]="!scanActive"></div>
+  
+</ion-content>
+<ng-template #camera>
+  <p style="margin-left:10%;">No camera on web display only on mobile</p>
+  <ion-button (click)="sumaPuntos('e831f938-0375-40bb-8be7-d5c866ae95c6')">OK QR</ion-button>
+
+</ng-template>
+

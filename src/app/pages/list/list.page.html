@@ -1,0 +1,17 @@
+
+<app-toolbar></app-toolbar>
+<ion-content>    
+  <ion-list-header>    
+    <ion-chip>Campañas</ion-chip>
+    <ion-chip *ngIf="nameCompany">{{nameCompany.name_company}}</ion-chip>
+    <ion-chip>{{terminal|titlecase}}</ion-chip>
+  </ion-list-header>
+  <ion-searchbar [debounce]="1000" (ionChange)="handleChange($event)"></ion-searchbar>
+  <ion-list lines="none" *ngFor="let item of campania_filtrados; index as i">
+        <ion-item button detail="true"(click)="showCampaign(item, i)"  detail-icon="ellipsis-vertical-outline"> 
+          {{ item.name_campaign| titlecase }}
+        </ion-item>
+  </ion-list>  
+</ion-content>
+
+

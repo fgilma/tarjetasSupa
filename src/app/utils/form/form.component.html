@@ -1,0 +1,32 @@
+  <div class="ion-padding">
+    <!-- <h1>Supabase + Ionic Angular</h1> -->
+    <h1>{{option}}</h1>
+    <!-- <p>Sign in via magic link with your email below</p> -->
+  </div>
+  <ion-list inset="true">
+    <form (ngSubmit)="login()"  [formGroup]="credentials">
+      <ion-item>
+        <ion-label position="stacked">Email</ion-label>
+        <ion-input type="email" placeholder="Email" formControlName="email"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="stacked">Password</ion-label>
+        <ion-input type="password" placeholder="Password" formControlName="password"></ion-input>
+      </ion-item>
+      <div class="ion-text-center">
+        <ion-button type="submit" fill="clear">{{option}}</ion-button>
+      </div>
+    </form>
+    <div *ngIf="option==='Register'; else newAccount">
+      <a style="margin-left: 15%;" [routerLink]="['/signin']" >Already have an account? <small style="color:black">Sign In here!</small></a>
+    </div>
+      <ng-template #newAccount>
+        <a style="margin-left: 25%;" [routerLink]="['/signup']" >Create new account</a>
+      </ng-template>
+    
+    
+  </ion-list>
+  <!-- <small style="margin-left: 30%;" >if you havent still signed up</small>
+  <ion-button style="margin-left: 35%;" fill="clear" [routerLink]="['/signup']">Register</ion-button> -->
+  
+
