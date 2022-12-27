@@ -1,3 +1,4 @@
+import { TitleCasePipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router} from '@angular/router';
 import { BarcodeScanner } from '@capacitor-community/barcode-scanner';
@@ -12,7 +13,7 @@ import { SupabaseService } from 'src/app/services/supabase.service';
 export class ReaderQRPage implements OnInit {
   scanActive: boolean = false;  
   user:any;
-  result!: string;
+  idCustomer!: string;
   mobileweb: boolean = false;
   campaign!: number;
   company!: number;
@@ -35,7 +36,7 @@ export class ReaderQRPage implements OnInit {
     console.log('es la plataforma desktop: ',this.platform.is('desktop'));
     console.log('es la plataforma mobileweb: ', this.platform.is('mobileweb'));
    
-    if (this.platform.is('mobileweb')){
+    if (this.platform.is('mobileweb') || this.platform.is('desktop')){
       this.mobileweb=true;
     } else{
       this.mobileweb=false;
@@ -68,6 +69,7 @@ export class ReaderQRPage implements OnInit {
          alert(result.content);
          //alert(result.content); //The QR content will come out here
          //Handle the data as your heart desires here
+         //this.idCustomer = result.content!;
          this.sumaPuntos(result.content!);
          
         //  if (result.content){
@@ -100,6 +102,7 @@ export class ReaderQRPage implements OnInit {
    sumaPuntos(result:string){
     let datacampaign: any;
     let datacampaignCustomer: any;
+    //let total: number;
     
     this.supabaseService.getCampaignCard(this.campaign, result)
                         .then((response)=> { this.campaignCard = response;
@@ -119,20 +122,31 @@ export class ReaderQRPage implements OnInit {
                                                                                   let total = (datacampaignCustomer.earned_points_customer_card + (+this.points));
                                                                                   console.log('el total es', total);                                                                                  
                                                                                   let points:number;
+                                                                                  let cliente:any;
                                                                                   let no_given_prizes:number=0;
+                                                                                  let won_prizes:number=0;
+                                                                                  let text_prize: string = "";
 
                                                                                   if (total < datacampaignCustomer.total_prize){
-                                                                                    points = total;                                                
+                                                                                    points = total;
+                                                                                    won_prizes = 0; 
+                                                                                    text_prize = 'No tienes premio';                                             
                                                                                   } else {
                                                                                     points = total % datacampaignCustomer.total_prize;
-                                                                                    no_given_prizes = Math.trunc(total / datacampaignCustomer.total_prize);
+                                                                                    won_prizes = Math.trunc(total / datacampaignCustomer.total_prize);
+                                                                                    text_prize = won_prizes==1 ? 'Tienes 1 premio nuevo!!!' : 'Tienes ' + won_prizes + ' premios nuevos!!!';
+                                                                                    //text_prize = 'No tienes premio'; 
                                                                                   }
-                                                                                  no_given_prizes = no_given_prizes + +datacampaignCustomer.no_given_prices;
+                                                                                  no_given_prizes = won_prizes + +datacampaignCustomer.no_given_prices;
                                                                                   console.log('que da', points, no_given_prizes);
                                                                                   this.supabaseService.updateCampanyCard(this.campaign, result, points, no_given_prizes);
-                                                                                 
+                                                                                  this.supabaseService.getCustomer(datacampaignCustomer.customer_id_fk).then((response)=>{cliente=response;
+                                                                                                                                                                          console.log(cliente);
+                                                                                                                                                                          this.showUser(this.points, text_prize, no_given_prizes, cliente, datacampaign[0].name_campaign, points, datacampaignCustomer.total_prize, result, datacampaignCustomer.given_prizes);
+                                                                                                                                                                        })
+                                                                                  
                                                                                 });
-                                              this.showUser(); 
+                                              // this.showUser(total); 
                                           })            
                         
                       .catch((error)=>{console.log('Usuario no inscrito en campaña.');
@@ -141,18 +155,39 @@ export class ReaderQRPage implements OnInit {
               
 }
 
-   showUser() {
+   showUser(points:number, text_prize:string, no_given_prizes:number, name:any, campaign:any, total_points:number, total_prize:number, result:string, given_prices:number) {
     this.alertController.create({
-      header: 'Puntos añadidos correctamente',
-      //subHeader: ''+ this.campaign,
-      //message: 'Are you sure? you want to leave without safty mask?',
+      header: text_prize,
+      subHeader: `Usuario: ${name.first_name_customer} ${name.last_name_customer} Campaña: ${campaign}`,
+      message: `<h6>Puntos añadidos: ${points} </h6>
+                <h6>Puntos acumulados: ${total_points} </h6>
+                <h6>Puntos para nuevo premio: ${total_prize-total_points} </h6>
+                <h6>Premios pendientes: ${no_given_prizes} </h6>`,
       buttons: [
         {
           text: ' Volver a campañas',
           handler: () => {
             this.router.navigate(['/list', this.company, this.terminal]);
-          }
+          },
         },
+        {
+          text: ' Consumir premios',
+          handler: data => {
+            console.log(this.campaign, result, no_given_prizes-data.prize, given_prices, given_prices + 
+              +data.prize);
+           // 
+           this.supabaseService.updateCampanyCardPrizes(this.campaign, result, no_given_prizes-data.prize, +given_prices + +data.prize);
+           this.router.navigate(['/list', this.company, this.terminal]);
+          },
+        },
+      ],
+      inputs: [
+        {
+          type: 'number',
+          name: 'prize',
+          placeholder: 'Prize',
+          min: 1,
+          max: 100,}
       ]
     }).then(res => {
       res.present();

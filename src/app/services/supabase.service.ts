@@ -45,7 +45,18 @@ signup(email: string, password: string){
     }
   })
 }
-  
+
+//Customer
+async getCustomer(id:number){  
+  let { data: customer, error } = await this.supabase
+  .from('customer')
+  //.select('name_company')
+  .select('*')
+  .eq('id_customer', id)
+  .single()
+  return customer;
+
+}
    
 //Company
 
@@ -166,6 +177,20 @@ async updateCampanyCard(campaign_id_fk:number, customer_id_fk:string, earned_poi
   .eq('campaign_id_fk', campaign_id_fk)
   .eq('customer_id_fk', customer_id_fk)
 }
+
+async updateCampanyCardPrizes(campaign_id_fk:number, customer_id_fk:string,
+  no_given_prizes:number, given_prices: number ){
+const { data, error } = await this.supabase
+.from('customer_card')
+.update({ 
+'given_prizes': given_prices,
+'no_given_prices': no_given_prizes, })
+.eq('campaign_id_fk', campaign_id_fk)
+.eq('customer_id_fk', customer_id_fk)
+}
+
+
+
 
   async getUser(){
     const {
