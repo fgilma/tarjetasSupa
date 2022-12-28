@@ -8,7 +8,7 @@
 <ion-content *ngIf="mobileweb===false; else camera">
   <!-- <ion-content> -->
   <ion-button expand="full" (click)="startScanner()" [hidden]="scanActive">
-    SCAN1
+    SCAN
   </ion-button>
   <ion-row class="scan-button" [hidden]="!scanActive">
     <ion-col class="ion-no-padding">
@@ -16,7 +16,9 @@
     </ion-col>
   </ion-row>
   <div class="scan-box" [hidden]="!scanActive"></div>
-  
+  <ion-button expand="full" [routerLink]="['/list', this.company, this.terminal]" [hidden]="scanActive">
+    return
+  </ion-button>
 </ion-content>
 <ng-template #camera>
   <p style="margin-left:10%;">No camera on web display only on mobile</p>
